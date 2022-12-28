@@ -1,9 +1,9 @@
-
+import i18next from 'i18next';
 import './scss/styles.scss'
 import Example from './Example.js';
-import { object, string } from 'yup';
+import { object, string, setLocale } from 'yup';
 import onChange from 'on-change';
-import cb from './view.js';
+import render from './view.js';
 
 
 export default () => {
@@ -18,15 +18,37 @@ const app = () => {
     inputValue: '',
     inputState: 'filling',
   }
-
-  const watchedState = onChange(state, () => cb(state));
+  
+  i18next.init({
+    lng: 'ru',
+    debug: true,
+    resources: {
+      ru: {
+        translation: {
+          validUrl: "RSS успешно загружен",
+          invalidUrl: "Ссылка должна быть валидным URL",
+          repeatUrl: "RSS уже существует",
+        }
+      }
+    }
+  });
+  const watchedState = onChange(state, () => render(state, i18next.t));
   const form = document.querySelector('.rss-form');
+
+  setLocale({
+    mixed: {
+      default: 'Não é válido',
+    },
+    number: {
+      min: 'Deve ser maior que ${min}',
+    },
+  });
+  let schema = object({
+    website: string().url(),
+  });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    let schema = object({
-      website: string().url(),
-    });
     const formData = new FormData(e.target);
     const url = formData.get('url');
     state.inputValue = url;
@@ -41,6 +63,8 @@ const app = () => {
       if (bl === false) {
         watchedState.inputState = 'uncorrect';
       }
+    }).catch((err) => {
+      console.log(err)
     });
   })
 
