@@ -1,10 +1,10 @@
 import i18next from 'i18next';
+import axios from 'axios';
 import './scss/styles.scss'
 import Example from './Example.js';
 import { object, string, setLocale } from 'yup';
 import onChange from 'on-change';
 import render from './view.js';
-
 
 export default () => {
   const element = document.getElementById('point');
@@ -17,6 +17,9 @@ const app = () => {
     repeatUrls: [],
     inputValue: '',
     inputState: 'filling',
+    nodePosts: null,
+    feeds: [],
+    posts: [],
   }
   
   i18next.init({
@@ -28,21 +31,18 @@ const app = () => {
           validUrl: "RSS успешно загружен",
           invalidUrl: "Ссылка должна быть валидным URL",
           repeatUrl: "RSS уже существует",
+          feedsHeading: "Фиды",
+          postsHeading: "Посты",
+          buttonName: "Просмотр",
         }
       }
     }
   });
+
   const watchedState = onChange(state, () => render(state, i18next.t));
   const form = document.querySelector('.rss-form');
 
-  setLocale({
-    mixed: {
-      default: 'Não é válido',
-    },
-    number: {
-      min: 'Deve ser maior que ${min}',
-    },
-  });
+  setLocale({});
   let schema = object({
     website: string().url(),
   });
@@ -52,22 +52,43 @@ const app = () => {
     const formData = new FormData(e.target);
     const url = formData.get('url');
     state.inputValue = url;
-    schema.isValid({ website: state.inputValue}).then((bl) => {
-      if (bl === true && state.repeatUrls.includes(state.inputValue)) {
+    schema.isValid({ website: state.inputValue}).then((validationResult) => {
+      if (validationResult === true && state.repeatUrls.includes(state.inputValue)) {
         watchedState.inputState = 'exists';
       }
-      if (bl === true && !state.repeatUrls.includes(state.inputValue)) {
-        watchedState.inputState = 'correct';
+      if (validationResult === true && !state.repeatUrls.includes(state.inputValue)) {
+        axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(state.inputValue)}`)
+        .then((response) => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(response.data.contents, 'text/xml');
+          state.inputState = 'correct';
+          let i = 2;
+          doc.querySelectorAll('item').forEach((post) => {
+            state.posts.push({
+              postName: post.querySelector('title').textContent,
+              id: i,
+              link: post.querySelector('link').textContent,
+            })
+            i += 1;
+          })
+          watchedState.feeds.push({ 
+            heading: doc.querySelector('title').textContent,
+            description: doc.querySelector('description').textContent,
+          })
+          console.log(doc)
+        })
+        .catch((error) => {
+          console.log(error);
+        })
         state.repeatUrls.push(watchedState.inputValue)
       }
-      if (bl === false) {
+      if (validationResult === false) {
         watchedState.inputState = 'uncorrect';
       }
     }).catch((err) => {
       console.log(err)
     });
   })
-
   return;
 }
 
