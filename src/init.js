@@ -12,6 +12,15 @@ export default () => {
   obj.init();
 };
 
+const addNewPosts = (state) => {
+  setTimeout(() => {
+    if (state.inputState === 'correct') {
+      console.log(state.inputState);
+    }
+    addNewPosts(state);
+  }, 1000);
+};
+
 const app = () => {
   const state = {
     repeatUrls: [],
@@ -61,6 +70,10 @@ const app = () => {
         .then((response) => {
           const parser = new DOMParser();
           const doc = parser.parseFromString(response.data.contents, 'text/xml');
+          if (doc.querySelector('parsererror') !== null) {
+            watchedState.inputState = 'uncorrect';
+            return;
+          };
           state.inputState = 'correct';
           let i = 2;
           doc.querySelectorAll('item').forEach((post) => {
@@ -75,6 +88,7 @@ const app = () => {
             heading: doc.querySelector('title').textContent,
             description: doc.querySelector('description').textContent,
           })
+          addNewPosts();
           console.log(doc)
         })
         .catch((error) => {
@@ -88,8 +102,8 @@ const app = () => {
     }).catch((err) => {
       console.log(err)
     });
-  })
-  return;
-}
+  });
+  addNewPosts(state);
+};
 
 console.log(app());
