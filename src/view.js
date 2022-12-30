@@ -4,6 +4,7 @@ export default (state, t) => {
   const feedSidebar = document.querySelector('.feeds');
   const postSidebar = document.querySelector('.posts');
   feedSidebar.innerHTML = '';
+  postSidebar.innerHTML = '';
 
   if (state.inputState === 'correct') {
     input.classList.remove('is-invalid');

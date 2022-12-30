@@ -12,21 +12,39 @@ export default () => {
   obj.init();
 };
 
-const addNewPosts = (state) => {
+const addNewPosts = (watchedState) => {
   setTimeout(() => {
-    if (state.inputState === 'correct') {
-      console.log(state.inputState);
-    }
-    addNewPosts(state);
-  }, 1000);
+    if (watchedState.inputState === 'correct') {
+      axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(watchedState.inputValue)}`)
+        .then((response) => {
+          const parser = new DOMParser();
+          const updatedDoc = parser.parseFromString(response.data.contents, 'text/xml');
+          const newPosts = [];
+          updatedDoc.querySelectorAll('item').forEach((item) => {
+            newPosts.push(item.querySelector('title').textContent)
+          })
+          const oldPosts = watchedState.posts.map((post) => post.postName);
+          updatedDoc.querySelectorAll('item').forEach((post) => {
+            if (!oldPosts.includes(post.querySelector('title').textContent)) {
+              watchedState.posts.unshift({
+                postName: post.querySelector('title').textContent,
+                id: watchedState.postId,
+                link: post.querySelector('link').textContent,
+              })
+            }
+          })
+        })
+    };
+    addNewPosts(watchedState);
+  }, 5000);
 };
 
 const app = () => {
   const state = {
+    postId: 2,
     repeatUrls: [],
     inputValue: '',
     inputState: 'filling',
-    nodePosts: null,
     feeds: [],
     posts: [],
   }
@@ -75,20 +93,18 @@ const app = () => {
             return;
           };
           state.inputState = 'correct';
-          let i = 2;
           doc.querySelectorAll('item').forEach((post) => {
             state.posts.push({
               postName: post.querySelector('title').textContent,
-              id: i,
+              id: state.postId,
               link: post.querySelector('link').textContent,
             })
-            i += 1;
+            state.postId += 1;
           })
           watchedState.feeds.push({ 
             heading: doc.querySelector('title').textContent,
             description: doc.querySelector('description').textContent,
           })
-          addNewPosts();
           console.log(doc)
         })
         .catch((error) => {
@@ -103,7 +119,7 @@ const app = () => {
       console.log(err)
     });
   });
-  addNewPosts(state);
+  addNewPosts(watchedState);
 };
 
 console.log(app());
