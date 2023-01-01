@@ -70,18 +70,18 @@ export default (state, t) => {
       post.prepend(postLink);
       post.append(postButton);
       postList.append(post);
-    })
+    });
     postsBodyHeading.prepend(postsHeading);
     postsContainer.prepend(postsBodyHeading);
     postsContainer.append(postList);
     postSidebar.prepend(postsContainer);
-  };
+  }
   if (state.inputState === 'uncorrect') {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');
     p.textContent = t('invalidUrl');
-  };
+  }
   if (state.inputState === 'exists') {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
@@ -89,4 +89,35 @@ export default (state, t) => {
     p.textContent = t('repeatUrl');
   }
 
-}
+  const modal = document.querySelector('.modal');
+  if (state.modal === 'close') {
+    document.body.setAttribute('style', '');
+    document.body.classList.remove('modal-open');
+    modal.classList.remove('show');
+    modal.removeAttribute('aria-modal');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.setAttribute('style', 'display: none;');
+  }
+  if (state.modal === 'open') {
+    document.body.setAttribute('style', 'overflow: hidden; paddig-right: 16px;');
+    document.body.classList.add('modal-open');
+    modal.classList.add('show');
+    modal.removeAttribute('aria-hidden');
+    modal.setAttribute('style', 'display: block; padding-left: 0px;');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('role', 'dialog');
+    state.posts.forEach((post) => {
+      const modalTitle = modal.querySelector('.modal-title');
+      const modalDesctiption = modal.querySelector('.modal-body');
+      const modalLink = modal.querySelector('.full-article');
+      console.log(state.targetBtn)
+      const btnId = state.targetBtn.getAttribute('data-id');
+      if (Number(btnId) === post.id) {
+        modalTitle.textContent = post.postName;
+        modalDesctiption.textContent = post.description;
+        modalLink.setAttribute('href', post.link);
+      }
+    })
+
+  }
+};
