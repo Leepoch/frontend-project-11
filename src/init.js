@@ -1,3 +1,4 @@
+import 'bootstrap';
 import i18next from 'i18next';
 import axios from 'axios';
 import './scss/styles.scss';
@@ -97,7 +98,7 @@ const app = () => {
                 id: state.postId,
                 link: post.querySelector('link').textContent,
                 description: post.querySelector('description').textContent,
-                state: 'blue',
+                state: 'notRead',
               });
               state.postId += 1;
             });
@@ -106,12 +107,20 @@ const app = () => {
               description: doc.querySelector('description').textContent,
             });
             const btnsView = document.querySelectorAll('.btn-sm');
-            btnsView.forEach((btn) => {
-              btn.addEventListener('click', (e) => {
-                watchedState.targetBtn = e.target;
-                watchedState.modal = 'open';
+              btnsView.forEach((btn) => {
+                btn.addEventListener('click', (e) => {
+                  console.log('open')
+                  watchedState.targetBtn = e.target;
+                  watchedState.modal = 'open';
+                })
               })
-            })
+              const card = document.querySelector('.card');
+              const postsTitles = card.querySelectorAll('a');
+              postsTitles.forEach((title) => {
+                title.addEventListener('click', (e) => {
+                  
+                })
+              })
             console.log(doc);
           })
           .catch((error) => {

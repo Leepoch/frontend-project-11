@@ -110,13 +110,21 @@ export default (state, t) => {
       const modalTitle = modal.querySelector('.modal-title');
       const modalDesctiption = modal.querySelector('.modal-body');
       const modalLink = modal.querySelector('.full-article');
-      console.log(state.targetBtn)
       const btnId = state.targetBtn.getAttribute('data-id');
       if (Number(btnId) === post.id) {
         modalTitle.textContent = post.postName;
         modalDesctiption.textContent = post.description;
         modalLink.setAttribute('href', post.link);
       }
+      const postsTitle = postSidebar.querySelectorAll('a');
+      postsTitle.forEach((postTitle) => {
+        const postTitleId = Number(postTitle.getAttribute('data-id'));
+        if (post.state === 'read' && postTitleId === post.id) {
+          console.log('open')
+          postTitle.classList.remove('fw-bold');
+          postTitle.classList.add('fw-normal', 'link-secondary');
+        }
+      })
     })
 
   }
