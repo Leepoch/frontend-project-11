@@ -116,16 +116,16 @@ export default (state, t) => {
         modalDesctiption.textContent = post.description;
         modalLink.setAttribute('href', post.link);
       }
-      const postsTitle = postSidebar.querySelectorAll('a');
+    })
+  }
+  state.posts.forEach((post) => {
+    const postsTitle = postSidebar.querySelectorAll('a');
       postsTitle.forEach((postTitle) => {
         const postTitleId = Number(postTitle.getAttribute('data-id'));
         if (post.state === 'read' && postTitleId === post.id) {
-          console.log('open')
           postTitle.classList.remove('fw-bold');
           postTitle.classList.add('fw-normal', 'link-secondary');
         }
       })
-    })
-
-  }
+  })
 };

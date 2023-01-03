@@ -106,21 +106,31 @@ const app = () => {
               heading: doc.querySelector('title').textContent,
               description: doc.querySelector('description').textContent,
             });
-            const btnsView = document.querySelectorAll('.btn-sm');
-              btnsView.forEach((btn) => {
-                btn.addEventListener('click', (e) => {
-                  console.log('open')
+            const postsContainer = document.querySelector('.posts');
+            postsContainer.addEventListener('click', (e) => {
+              watchedState.posts.forEach((post) => {
+                if (e.target.tagName === 'BUTTON') {
                   watchedState.targetBtn = e.target;
                   watchedState.modal = 'open';
-                })
+                  const modal = document.querySelector('.modal-content');
+                  modal.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') {
+                      watchedState.modal = close;
+                    }
+                  })
+                  const btnId = Number(e.target.getAttribute('data-id'));
+                  if (btnId === post.id) {
+                    post.state = 'read';
+                  }
+                }
+                if (e.target.tagName === 'A') {
+                  const titleId = Number(e.target.getAttribute('data-id'));
+                  if (titleId === post.id) {
+                    post.state = 'read';
+                  }
+                }
               })
-              const card = document.querySelector('.card');
-              const postsTitles = card.querySelectorAll('a');
-              postsTitles.forEach((title) => {
-                title.addEventListener('click', (e) => {
-                  
-                })
-              })
+            })
             console.log(doc);
           })
           .catch((error) => {
