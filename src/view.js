@@ -36,7 +36,7 @@ export default (state, t) => {
       feedDescription.textContent = dataFeed.description;
       feed.prepend(feedName);
       feed.append(feedDescription);
-      feedList.prepend(feed);
+      feedList.append(feed);
     });
     feedsContainer.append(feedList);
 
@@ -81,6 +81,12 @@ export default (state, t) => {
     p.classList.remove('text-success');
     p.classList.add('text-danger');
     p.textContent = t('invalidUrl');
+  }
+  if (state.inputState === 'networkError') {
+    input.classList.add('is-invalid');
+    p.classList.remove('text-success');
+    p.classList.add('text-danger');
+    p.textContent = t('networkError');
   }
   if (state.inputState === 'exists') {
     input.classList.add('is-invalid');

@@ -57,6 +57,8 @@ const app = () => {
           validUrl: 'RSS успешно загружен',
           invalidUrl: 'Ссылка должна быть валидным URL',
           repeatUrl: 'RSS уже существует',
+          networkError: 'Ошибка сети',
+          emptyString: 'Не должно быть пустым',
           feedsHeading: 'Фиды',
           postsHeading: 'Посты',
           buttonName: 'Просмотр',
@@ -83,7 +85,7 @@ const app = () => {
         watchedState.inputState = 'exists';
       }
       if (validationResult === true && !state.repeatUrls.includes(state.inputValue)) {
-        axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(state.inputValue)}`)
+        axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(state.inputValue)}`)
           .then((response) => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(response.data.contents, 'text/xml');
@@ -134,15 +136,16 @@ const app = () => {
             console.log(doc);
           })
           .catch((error) => {
-            console.log(error);
+            watchedState.inputState = 'networkError'
+            console.log(error)
           });
         state.repeatUrls.push(watchedState.inputValue);
       }
       if (validationResult === false) {
         watchedState.inputState = 'uncorrect';
       }
-    }).catch((err) => {
-      console.log(err);
+    }).catch((error) => {
+      console.log(error);
     });
   });
   addNewPosts(watchedState);
