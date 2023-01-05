@@ -81,10 +81,7 @@ const app = () => {
     const url = formData.get('url');
     state.inputValue = url;
     schema.isValid({ website: state.inputValue }).then((validationResult) => {
-      if (validationResult === true && state.repeatUrls.includes(state.inputValue)) {
-        watchedState.inputState = 'exists';
-      }
-      if (validationResult === true && !state.repeatUrls.includes(state.inputValue)) {
+      if (validationResult === true) {
         axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(state.inputValue)}`)
           .then((response) => {
             const parser = new DOMParser();
@@ -93,6 +90,11 @@ const app = () => {
               watchedState.inputState = 'uncorrect';
               return;
             }
+            if (state.repeatUrls.includes(state.inputValue) && doc.querySelector('parsererror') === null) {
+              watchedState.inputState = 'exists';
+              return;
+            }
+            state.repeatUrls.push(watchedState.inputValue);
             state.inputState = 'correct';
             doc.querySelectorAll('item').forEach((post) => {
               state.posts.push({
@@ -139,7 +141,6 @@ const app = () => {
             watchedState.inputState = 'networkError';
             console.log(error);
           });
-        state.repeatUrls.push(watchedState.inputValue);
       }
       if (validationResult === false) {
         watchedState.inputState = 'uncorrect';

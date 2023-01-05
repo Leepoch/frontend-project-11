@@ -3,10 +3,10 @@ export default (state, t) => {
   const input = document.querySelector('#url-input');
   const feedSidebar = document.querySelector('.feeds');
   const postSidebar = document.querySelector('.posts');
-  feedSidebar.innerHTML = '';
-  postSidebar.innerHTML = '';
 
   if (state.inputState === 'correct') {
+    feedSidebar.innerHTML = '';
+    postSidebar.innerHTML = '';
     input.classList.remove('is-invalid');
     p.classList.remove('text-danger');
     p.classList.add('text-success');
