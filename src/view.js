@@ -76,13 +76,13 @@ export default (state, t) => {
     postsContainer.append(postList);
     postSidebar.prepend(postsContainer);
   }
-  if (state.inputState === 'uncorrect') {
+  if (state.inputState === 'mustBeValid') {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');
     p.textContent = t('invalidUrl');
   }
-  if (state.inputState === 'networkError') {
+  if (state.inputState === 'Network Error') {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');

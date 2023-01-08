@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const addNewPosts = (watchedState) => {
   setTimeout(() => {
     if (watchedState.inputState === 'correct') {

@@ -41,25 +41,22 @@ export default () => {
   const watchedState = onChange(state, () => render(state, i18next.t));
   const form = document.querySelector('.rss-form');
 
-  setLocale({});
-  const schema = object({
-    website: string().url('mustBeValid').notOneOf(watchedState.repeatUrls, 'exists'),
-  });
-
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const url = formData.get('url');
     watchedState.inputValue = url;
-    schema.validate({ website: watchedState.inputValue }).then((validationResult) => {
-      console.log(validationResult)
+    setLocale({});
+    const schema = object({
+      website: string().url('mustBeValid').notOneOf(watchedState.repeatUrls, 'exists'),
+    });
+    schema.validate({ website: watchedState.inputValue }).then(() => {
+      parser(watchedState);
     })
     .catch((error) => {
-      console.log(error);
+      console.log(error.message)
+      watchedState.inputState = error.message
     });
-    if (!watchedState.repeatUrls.includes(watchedState.inputValue)) {
-      watchedState.repeatUrls.push(watchedState.inputValue)
-    }
   });
   addNewPosts(watchedState);
 };
