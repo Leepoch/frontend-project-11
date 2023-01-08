@@ -15,10 +15,10 @@ module.exports = {
           },
         },
       },
-      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'style-loader', 'postcss-loader'] },
+      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'] },
       {
         test: /\.scss$/,
-        use: [MiniCssExtractPlugin.loader, 'style-loader', 'sass-loader', 'postcss-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader', 'postcss-loader'],
       },
       {
         test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -33,7 +33,7 @@ module.exports = {
   plugins: [
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
-      template: 'index.html',
+      template: './index.html',
     }),
   ],
 };

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export default (watchedState) => {
-  axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(state.inputValue)}`)
+  axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(watchedState.inputValue)}`)
   .then((response) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(response.data.contents, 'text/xml');
@@ -9,16 +9,16 @@ export default (watchedState) => {
       watchedState.inputState = 'uncorrect';
       return;
     }
-    state.inputState = 'correct';
+    watchedState.inputState = 'correct';
     doc.querySelectorAll('item').forEach((post) => {
-      state.posts.push({
+      watchedState.posts.push({
         postName: post.querySelector('title').textContent,
-        id: state.postId,
+        id: watchedState.postId,
         link: post.querySelector('link').textContent,
         description: post.querySelector('description').textContent,
         state: 'notRead',
       });
-      state.postId += 1;
+      watchedState.postId += 1;
     });
     watchedState.feeds.push({
       heading: doc.querySelector('title').textContent,
@@ -49,7 +49,6 @@ export default (watchedState) => {
         }
       });
     });
-    console.log(doc);
   })
   .catch((error) => {
     console.log(error);

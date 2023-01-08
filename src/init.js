@@ -7,7 +7,7 @@ import render from './view.js';
 import parser from './parse.js';
 import addNewPosts from './addNewPosts';
 
-const app = () => {
+export default () => {
   const state = {
     modal: 'close',
     targetBtn: null,
@@ -43,23 +43,23 @@ const app = () => {
 
   setLocale({});
   const schema = object({
-    website: string().url().notOneOf(watchedState.repeatUrls),
+    website: string().url('mustBeValid').notOneOf(watchedState.repeatUrls, 'exists'),
   });
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const url = formData.get('url');
-    state.inputValue = url;
-    schema.isValid({ website: watchedState.inputValue }).then((validationResult) => {
-      state.repeatUrls.push(state.inputValue);
+    watchedState.inputValue = url;
+    schema.validate({ website: watchedState.inputValue }).then((validationResult) => {
       console.log(validationResult)
     })
     .catch((error) => {
       console.log(error);
     });
+    if (!watchedState.repeatUrls.includes(watchedState.inputValue)) {
+      watchedState.repeatUrls.push(watchedState.inputValue)
+    }
   });
   addNewPosts(watchedState);
 };
-
-app();
