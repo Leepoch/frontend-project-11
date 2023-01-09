@@ -2,7 +2,7 @@ import parser from './parse.js';
 
 const addNewPosts = (watchedState) => {
   setTimeout(() => {
-    if (watchedState.inputState === 'correct') {
+    if (watchedState.urlState === 'correct') {
       parser(watchedState).then((updatedDoc) => {
         const oldPosts = watchedState.posts.map((post) => post.postName);
           updatedDoc.querySelectorAll('item').forEach((post) => {

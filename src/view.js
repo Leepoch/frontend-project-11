@@ -4,7 +4,11 @@ export default (state, t) => {
   const feedSidebar = document.querySelector('.feeds');
   const postSidebar = document.querySelector('.posts');
 
-  if (state.inputState === 'correct') {
+  if (state.inputState === 'empty') {
+    input.value = '';
+  }
+
+  if (state.urlState === 'correct') {
     feedSidebar.innerHTML = '';
     postSidebar.innerHTML = '';
     input.classList.remove('is-invalid');
@@ -76,19 +80,19 @@ export default (state, t) => {
     postsContainer.append(postList);
     postSidebar.prepend(postsContainer);
   }
-  if (state.inputState === 'mustBeValid') {
+  if (state.urlState === 'mustBeValid') {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');
     p.textContent = t('invalidUrl');
   }
-  if (state.inputState === 'Network Error') {
+  if (state.urlState === 'Network Error') {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');
     p.textContent = t('networkError');
   }
-  if (state.inputState === 'exists') {
+  if (state.urlState === 'exists') {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');

@@ -7,6 +7,6 @@ export default (watchedState) => {
       return parser.parseFromString(response.data.contents, 'text/xml');
     })
     .catch((error) => {
-      watchedState.inputState = error.message;
+      watchedState.urlState = error.message;
     });
 };

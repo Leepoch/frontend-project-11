@@ -14,6 +14,7 @@ export default () => {
     postId: 2,
     repeatUrls: [],
     inputValue: '',
+    urlState: 'filling',
     inputState: 'filling',
     feeds: [],
     posts: [],
@@ -43,6 +44,7 @@ export default () => {
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
+    watchedState.inputState = 'empty';
     const formData = new FormData(event.target);
     const url = formData.get('url');
     watchedState.inputValue = url;
@@ -53,13 +55,13 @@ export default () => {
     schema.validate({ website: watchedState.inputValue }).then(() => {
       parser(watchedState).then((doc) => {
         if (doc.querySelector('parsererror') !== null) {
-          watchedState.inputState = 'uncorrect';
+          watchedState.urlState = 'uncorrect';
           return;
         }
         if (!watchedState.repeatUrls.includes(watchedState.inputValue)) {
           watchedState.repeatUrls.push(watchedState.inputValue);
         }
-        watchedState.inputState = 'correct';
+        watchedState.urlState = 'correct';
         doc.querySelectorAll('item').forEach((post) => {
           watchedState.posts.push({
             postName: post.querySelector('title').textContent,
@@ -102,7 +104,7 @@ export default () => {
       })
     })
       .catch((error) => {
-        watchedState.inputState = error.message;
+        watchedState.urlState = error.message;
       });
   });
   addNewPosts(watchedState);
