@@ -44,7 +44,6 @@ export default () => {
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    watchedState.inputState = 'empty';
     const formData = new FormData(event.target);
     const url = formData.get('url');
     watchedState.inputValue = url;
@@ -101,11 +100,12 @@ export default () => {
             }
           });
         });
-      })
+      });
     })
       .catch((error) => {
         watchedState.urlState = error.message;
       });
+    watchedState.inputState = 'empty';
   });
   addNewPosts(watchedState);
 };
