@@ -34,6 +34,7 @@ export default () => {
           feedsHeading: 'Фиды',
           postsHeading: 'Посты',
           buttonName: 'Просмотр',
+          notRSS: 'Ресурс не содержит валидный RSS',
         },
       },
     },
@@ -54,7 +55,7 @@ export default () => {
     schema.validate({ website: watchedState.inputValue }).then(() => {
       parser(watchedState).then((doc) => {
         if (doc.querySelector('parsererror') !== null) {
-          watchedState.urlState = 'uncorrect';
+          watchedState.urlState = 'notRSS';
           return;
         }
         if (!watchedState.repeatUrls.includes(watchedState.inputValue)) {

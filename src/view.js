@@ -8,6 +8,13 @@ export default (state, t) => {
     input.value = '';
   }
 
+  if (state.urlState === 'notRSS') {
+    input.classList.add('is-invalid');
+    p.classList.remove('text-success');
+    p.classList.add('text-danger');
+    p.textContent = t('notRSS');
+  }
+
   if (state.urlState === 'correct') {
     feedSidebar.innerHTML = '';
     postSidebar.innerHTML = '';
