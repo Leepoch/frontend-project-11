@@ -105,36 +105,6 @@ export default (state, i18nInstance) => {
     p.classList.add('text-danger');
     p.textContent = i18nInstance.t('repeatUrl');
   }
-
-  const modal = document.querySelector('.modal');
-  if (state.modal === 'close') {
-    document.body.setAttribute('style', '');
-    document.body.classList.remove('modal-open');
-    modal.classList.remove('show');
-    modal.removeAttribute('aria-modal');
-    modal.setAttribute('aria-hidden', 'true');
-    modal.setAttribute('style', 'display: none;');
-  }
-  if (state.modal === 'open') {
-    document.body.setAttribute('style', 'overflow: hidden; paddig-right: 16px;');
-    document.body.classList.add('modal-open');
-    modal.classList.add('show');
-    modal.removeAttribute('aria-hidden');
-    modal.setAttribute('style', 'display: block; padding-left: 0px;');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('role', 'dialog');
-    state.posts.forEach((post) => {
-      const modalTitle = modal.querySelector('.modal-title');
-      const modalDesctiption = modal.querySelector('.modal-body');
-      const modalLink = modal.querySelector('.full-article');
-      const btnId = state.targetBtn.getAttribute('data-id');
-      if (Number(btnId) === post.id) {
-        modalTitle.textContent = post.postName;
-        modalDesctiption.textContent = post.description;
-        modalLink.setAttribute('href', post.link);
-      }
-    });
-  }
   state.posts.forEach((post) => {
     const postsTitle = postSidebar.querySelectorAll('a');
     postsTitle.forEach((postTitle) => {
@@ -144,5 +114,13 @@ export default (state, i18nInstance) => {
         postTitle.classList.add('fw-normal', 'link-secondary');
       }
     });
+  });
+  const modalTitle = document.querySelector('.modal-title');
+  const modalBody = document.querySelector('.modal-body');
+  state.posts.forEach((post) => {
+    if (post.id === state.currentId) {
+      modalTitle.textContent = post.postName;
+      modalBody.textContent = post.description;
+    }
   });
 };

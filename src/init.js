@@ -16,6 +16,7 @@ export default () => {
     repeatUrls: [],
     urlState: 'filling',
     inputState: 'filling',
+    currentId: null,
     feeds: [],
     posts: [],
   };
@@ -73,15 +74,8 @@ export default () => {
       postsContainer.addEventListener('click', (e) => {
         watchedState.posts.forEach((post) => {
           if (e.target.tagName === 'BUTTON') {
-            watchedState.targetBtn = e.target;
-            watchedState.modal = 'open';
-            const modal = document.querySelector('.modal-content');
-            modal.addEventListener('click', (eventCloseButton) => {
-              if (eventCloseButton.target.tagName === 'BUTTON') {
-                watchedState.modal = 'close';
-              }
-            });
             const btnId = Number(e.target.getAttribute('data-id'));
+            watchedState.currentId = btnId;
             if (btnId === post.id) {
               post.state = 'read';
             }
