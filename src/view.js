@@ -1,4 +1,4 @@
-export default (state, t) => {
+export default (state, i18nInstance) => {
   const p = document.querySelector('.feedback');
   const input = document.querySelector('#url-input');
   const feedSidebar = document.querySelector('.feeds');
@@ -12,7 +12,7 @@ export default (state, t) => {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');
-    p.textContent = t('notRSS');
+    p.textContent = i18nInstance.t('notRSS');
   }
 
   if (state.urlState === 'correct') {
@@ -21,7 +21,7 @@ export default (state, t) => {
     input.classList.remove('is-invalid');
     p.classList.remove('text-danger');
     p.classList.add('text-success');
-    p.textContent = t('validUrl');
+    p.textContent = i18nInstance.t('validUrl');
 
     const feedsContainer = document.createElement('div');
     feedsContainer.classList.add('card', 'border-0');
@@ -29,7 +29,7 @@ export default (state, t) => {
     feedsBodyHeading.classList.add('card-body');
     const feedsHeading = document.createElement('h2');
     feedsHeading.classList.add('card-title', 'h4');
-    feedsHeading.textContent = t('feedsHeading');
+    feedsHeading.textContent = i18nInstance.t('feedsHeading');
     feedsBodyHeading.prepend(feedsHeading);
     feedsContainer.prepend(feedsBodyHeading);
     feedSidebar.prepend(feedsContainer);
@@ -57,7 +57,7 @@ export default (state, t) => {
     postsBodyHeading.classList.add('card-body');
     const postsHeading = document.createElement('h2');
     postsHeading.classList.add('card-title', 'h4');
-    postsHeading.textContent = t('postsHeading');
+    postsHeading.textContent = i18nInstance.t('postsHeading');
 
     const postList = document.createElement('ul');
     postList.classList.add('list-group', 'border-0', 'rounded-0');
@@ -77,7 +77,7 @@ export default (state, t) => {
       postButton.setAttribute('data-id', postData.id);
       postButton.setAttribute('data-bs-toggle', 'modal');
       postButton.setAttribute('data-bs-target', '#modal');
-      postButton.textContent = t('buttonName');
+      postButton.textContent = i18nInstance.t('buttonName');
       post.prepend(postLink);
       post.append(postButton);
       postList.append(post);
@@ -91,19 +91,19 @@ export default (state, t) => {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');
-    p.textContent = t('invalidUrl');
+    p.textContent = i18nInstance.t('invalidUrl');
   }
   if (state.urlState === 'Network Error') {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');
-    p.textContent = t('networkError');
+    p.textContent = i18nInstance.t('networkError');
   }
   if (state.urlState === 'exists') {
     input.classList.add('is-invalid');
     p.classList.remove('text-success');
     p.classList.add('text-danger');
-    p.textContent = t('repeatUrl');
+    p.textContent = i18nInstance.t('repeatUrl');
   }
 
   const modal = document.querySelector('.modal');
