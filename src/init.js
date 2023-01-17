@@ -20,6 +20,9 @@ export default () => {
     currentId: null,
     feeds: [],
     posts: [],
+    uiState: {
+      posts: [],
+    },
   };
 
   const elements = {
@@ -67,6 +70,7 @@ export default () => {
                 description: parseData.description,
               });
               watchedState.posts = watchedState.posts.concat(parseData.posts);
+              watchedState.uiState.posts = watchedState.uiState.posts.concat(parseData.uiState.posts);
             });
         })
           .catch((error) => {
@@ -78,22 +82,21 @@ export default () => {
         }
       });
       elements.postsContainer.addEventListener('click', (e) => {
-        watchedState.posts.forEach((post) => {
+       watchedState.uiState.posts.forEach((post) => {
           if (e.target.tagName === 'BUTTON') {
             const btnId = Number(e.target.getAttribute('data-id'));
-            console.log(btnId, 'btnId');
             watchedState.currentId = btnId;
-            if (btnId === post.id) {
+            if (btnId === post.postId) {
               post.state = 'read';
             }
           }
           if (e.target.tagName === 'A') {
             const titleId = Number(e.target.getAttribute('data-id'));
-            if (titleId === post.id) {
+            if (titleId === post.postId) {
               post.state = 'read';
             }
           }
-        });
+        })
       });
     });
 };

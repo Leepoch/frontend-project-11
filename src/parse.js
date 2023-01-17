@@ -10,13 +10,20 @@ export default (response) => {
     heading: xml.querySelector('title').textContent,
     description: xml.querySelector('description').textContent,
     posts: [],
+    uiState: {
+      posts: [],
+    },
   };
   xml.querySelectorAll('item').forEach((post) => {
+    const id = Number(_.uniqueId());
     parseData.posts.push({
       postName: post.querySelector('title').textContent,
-      id: Number(_.uniqueId()),
+      id,
       link: post.querySelector('link').textContent,
       description: post.querySelector('description').textContent,
+    });
+    parseData.uiState.posts.push({
+      postId: id,
       state: 'notRead',
     });
   });

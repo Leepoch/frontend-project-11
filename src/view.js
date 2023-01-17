@@ -100,11 +100,11 @@ export default (state, i18nInstance, elements) => {
     elements.p.classList.add('text-danger');
     elements.p.textContent = i18nInstance.t('repeatUrl');
   }
-  state.posts.forEach((post) => {
+  state.uiState.posts.forEach((post) => {
     const postsTitle = elements.postSidebar.querySelectorAll('a');
     postsTitle.forEach((postTitle) => {
       const postTitleId = Number(postTitle.getAttribute('data-id'));
-      if (post.state === 'read' && postTitleId === post.id) {
+      if (post.state === 'read' && postTitleId === post.postId) {
         postTitle.classList.remove('fw-bold');
         postTitle.classList.add('fw-normal', 'link-secondary');
       }
