@@ -1,5 +1,4 @@
 export default (state, i18nInstance, elements) => {
-
   if (state.inputState === 'empty') {
     elements.input.value = '';
   }

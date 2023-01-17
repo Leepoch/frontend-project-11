@@ -67,18 +67,21 @@ export default () => {
                 description: parseData.description,
               });
               watchedState.posts = watchedState.posts.concat(parseData.posts);
-            })
+            });
         })
           .catch((error) => {
             watchedState.urlState = error.message;
           });
         watchedState.inputState = 'empty';
+        if (watchedState.feeds.length === 0) {
+          addNewPosts(watchedState, url);
+        }
       });
       elements.postsContainer.addEventListener('click', (e) => {
         watchedState.posts.forEach((post) => {
           if (e.target.tagName === 'BUTTON') {
             const btnId = Number(e.target.getAttribute('data-id'));
-            console.log(btnId, 'btnId')
+            console.log(btnId, 'btnId');
             watchedState.currentId = btnId;
             if (btnId === post.id) {
               post.state = 'read';
@@ -92,6 +95,5 @@ export default () => {
           }
         });
       });
-      addNewPosts(watchedState);
     });
 };
