@@ -1,4 +1,5 @@
 import 'bootstrap';
+import axios from 'axios';
 import i18next from 'i18next';
 import './scss/styles.scss';
 import { object, string, setLocale } from 'yup';
@@ -28,6 +29,7 @@ export default () => {
     postSidebar: document.querySelector('.posts'),
     modalTitle: document.querySelector('.modal-title'),
     modalBody: document.querySelector('.modal-body'),
+    postsContainer: document.querySelector('.posts'),
   };
 
   const i18nInstance = i18next.createInstance();
@@ -49,41 +51,34 @@ export default () => {
           website: string().url('mustBeValid').notOneOf(watchedState.repeatUrls, 'exists'),
         });
         schema.validate({ website: url }).then(() => {
-          parser(watchedState, url).then((doc) => {
-            if (doc.querySelector('parsererror') !== null) {
-              watchedState.urlState = 'notRSS';
-              return;
-            }
-            if (!watchedState.repeatUrls.includes(url)) {
-              watchedState.repeatUrls.push(url);
-            }
-            watchedState.urlState = 'correct';
-            doc.querySelectorAll('item').forEach((post) => {
-              watchedState.posts.push({
-                postName: post.querySelector('title').textContent,
-                id: watchedState.postId,
-                link: post.querySelector('link').textContent,
-                description: post.querySelector('description').textContent,
-                state: 'notRead',
+          axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
+            .then((response) => {
+              const parseData = parser(response);
+              if (parseData === 'error') {
+                watchedState.urlState = 'notRSS';
+                return;
+              }
+              if (!watchedState.repeatUrls.includes(url)) {
+                watchedState.repeatUrls.push(url);
+              }
+              watchedState.urlState = 'correct';
+              watchedState.feeds.push({
+                heading: parseData.heading,
+                description: parseData.description,
               });
-              watchedState.postId += 1;
-            });
-            watchedState.feeds.push({
-              heading: doc.querySelector('title').textContent,
-              description: doc.querySelector('description').textContent,
-            });
-          });
+              watchedState.posts = watchedState.posts.concat(parseData.posts);
+            })
         })
           .catch((error) => {
             watchedState.urlState = error.message;
           });
         watchedState.inputState = 'empty';
       });
-      const postsContainer = document.querySelector('.posts');
-      postsContainer.addEventListener('click', (e) => {
+      elements.postsContainer.addEventListener('click', (e) => {
         watchedState.posts.forEach((post) => {
           if (e.target.tagName === 'BUTTON') {
             const btnId = Number(e.target.getAttribute('data-id'));
+            console.log(btnId, 'btnId')
             watchedState.currentId = btnId;
             if (btnId === post.id) {
               post.state = 'read';
