@@ -1,27 +1,23 @@
-export default (state, i18nInstance) => {
-  const p = document.querySelector('.feedback');
-  const input = document.querySelector('#url-input');
-  const feedSidebar = document.querySelector('.feeds');
-  const postSidebar = document.querySelector('.posts');
+export default (state, i18nInstance, elements) => {
 
   if (state.inputState === 'empty') {
-    input.value = '';
+    elements.input.value = '';
   }
 
   if (state.urlState === 'notRSS') {
-    input.classList.add('is-invalid');
-    p.classList.remove('text-success');
-    p.classList.add('text-danger');
-    p.textContent = i18nInstance.t('notRSS');
+    elements.input.classList.add('is-invalid');
+    elements.p.classList.remove('text-success');
+    elements.p.classList.add('text-danger');
+    elements.p.textContent = i18nInstance.t('notRSS');
   }
 
   if (state.urlState === 'correct') {
-    feedSidebar.innerHTML = '';
-    postSidebar.innerHTML = '';
-    input.classList.remove('is-invalid');
-    p.classList.remove('text-danger');
-    p.classList.add('text-success');
-    p.textContent = i18nInstance.t('validUrl');
+    elements.feedSidebar.innerHTML = '';
+    elements.postSidebar.innerHTML = '';
+    elements.input.classList.remove('is-invalid');
+    elements.p.classList.remove('text-danger');
+    elements.p.classList.add('text-success');
+    elements.p.textContent = i18nInstance.t('validUrl');
 
     const feedsContainer = document.createElement('div');
     feedsContainer.classList.add('card', 'border-0');
@@ -32,7 +28,7 @@ export default (state, i18nInstance) => {
     feedsHeading.textContent = i18nInstance.t('feedsHeading');
     feedsBodyHeading.prepend(feedsHeading);
     feedsContainer.prepend(feedsBodyHeading);
-    feedSidebar.prepend(feedsContainer);
+    elements.feedSidebar.prepend(feedsContainer);
 
     const feedList = document.createElement('ul');
     feedList.classList.add('list-group', 'border-0', 'rounded-0');
@@ -85,28 +81,28 @@ export default (state, i18nInstance) => {
     postsBodyHeading.prepend(postsHeading);
     postsContainer.prepend(postsBodyHeading);
     postsContainer.append(postList);
-    postSidebar.prepend(postsContainer);
+    elements.postSidebar.prepend(postsContainer);
   }
   if (state.urlState === 'mustBeValid') {
-    input.classList.add('is-invalid');
-    p.classList.remove('text-success');
-    p.classList.add('text-danger');
-    p.textContent = i18nInstance.t('invalidUrl');
+    elements.input.classList.add('is-invalid');
+    elements.p.classList.remove('text-success');
+    elements.p.classList.add('text-danger');
+    elements.p.textContent = i18nInstance.t('invalidUrl');
   }
   if (state.urlState === 'Network Error') {
-    input.classList.add('is-invalid');
-    p.classList.remove('text-success');
-    p.classList.add('text-danger');
-    p.textContent = i18nInstance.t('networkError');
+    elements.input.classList.add('is-invalid');
+    elements.p.classList.remove('text-success');
+    elements.p.classList.add('text-danger');
+    elements.p.textContent = i18nInstance.t('networkError');
   }
   if (state.urlState === 'exists') {
-    input.classList.add('is-invalid');
-    p.classList.remove('text-success');
-    p.classList.add('text-danger');
-    p.textContent = i18nInstance.t('repeatUrl');
+    elements.input.classList.add('is-invalid');
+    elements.p.classList.remove('text-success');
+    elements.p.classList.add('text-danger');
+    elements.p.textContent = i18nInstance.t('repeatUrl');
   }
   state.posts.forEach((post) => {
-    const postsTitle = postSidebar.querySelectorAll('a');
+    const postsTitle = elements.postSidebar.querySelectorAll('a');
     postsTitle.forEach((postTitle) => {
       const postTitleId = Number(postTitle.getAttribute('data-id'));
       if (post.state === 'read' && postTitleId === post.id) {
@@ -115,12 +111,10 @@ export default (state, i18nInstance) => {
       }
     });
   });
-  const modalTitle = document.querySelector('.modal-title');
-  const modalBody = document.querySelector('.modal-body');
   state.posts.forEach((post) => {
     if (post.id === state.currentId) {
-      modalTitle.textContent = post.postName;
-      modalBody.textContent = post.description;
+      elements.modalTitle.textContent = post.postName;
+      elements.modalBody.textContent = post.description;
     }
   });
 };

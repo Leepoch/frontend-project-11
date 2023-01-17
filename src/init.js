@@ -6,7 +6,7 @@ import onChange from 'on-change';
 import render from './view.js';
 import parser from './parse.js';
 import addNewPosts from './addNewPosts';
-import resources from './ru.js';
+import resources from './locales/ru.js';
 
 export default () => {
   const state = {
@@ -21,6 +21,15 @@ export default () => {
     posts: [],
   };
 
+  const elements = {
+    p: document.querySelector('.feedback'),
+    input: document.querySelector('#url-input'),
+    feedSidebar: document.querySelector('.feeds'),
+    postSidebar: document.querySelector('.posts'),
+    modalTitle: document.querySelector('.modal-title'),
+    modalBody: document.querySelector('.modal-body'),
+  };
+
   const i18nInstance = i18next.createInstance();
   i18nInstance.init({
     lng: 'ru',
@@ -28,7 +37,7 @@ export default () => {
     resources,
   })
     .then(() => {
-      const watchedState = onChange(state, () => render(state, i18nInstance));
+      const watchedState = onChange(state, () => render(state, i18nInstance, elements));
       const form = document.querySelector('.rss-form');
 
       form.addEventListener('submit', (event) => {
