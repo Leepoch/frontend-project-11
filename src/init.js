@@ -76,7 +76,10 @@ export default () => {
             .catch((error) => {
               watchedState.urlState = error.message;
             });
-        });
+        })
+          .catch((error) => {
+            watchedState.urlState = error.message;
+          });
         watchedState.inputState = 'empty';
         if (watchedState.feeds.length === 0) {
           addNewPosts(watchedState, url);
