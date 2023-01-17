@@ -1,8 +1,6 @@
 import _ from 'lodash';
 
-export default (response) => {
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(response.data.contents, 'text/xml');
+export default (xml) => {
   if (xml.querySelector('parsererror') !== null) {
     return 'error';
   }

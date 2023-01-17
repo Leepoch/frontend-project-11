@@ -7,7 +7,9 @@ const addNewPosts = (watchedState, url) => {
       axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
         .then((response) => {
           const oldPosts = watchedState.posts.map((post) => post.postName);
-          const dataParse = parser(response);
+          const docParser = new DOMParser();
+          const xml = docParser.parseFromString(response.data.contents, 'text/xml');
+          const dataParse = parser(xml);
           dataParse.posts.forEach((post) => {
             if (!oldPosts.includes(post.postName)) {
               watchedState.posts.unshift(post);

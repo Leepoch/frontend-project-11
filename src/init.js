@@ -56,7 +56,9 @@ export default () => {
         schema.validate({ website: url }).then(() => {
           axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
             .then((response) => {
-              const parseData = parser(response);
+              const docParser = new DOMParser();
+              const xml = docParser.parseFromString(response.data.contents, 'text/xml');
+              const parseData = parser(xml);
               if (parseData === 'error') {
                 watchedState.urlState = 'notRSS';
                 return;
