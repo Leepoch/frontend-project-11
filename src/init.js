@@ -70,7 +70,8 @@ export default () => {
                 description: parseData.description,
               });
               watchedState.posts = watchedState.posts.concat(parseData.posts);
-              watchedState.uiState.posts = watchedState.uiState.posts.concat(parseData.uiState.posts);
+              const uiState = parseData.uiState.posts;
+              watchedState.uiState.posts = watchedState.uiState.posts.concat(uiState);
             });
         })
           .catch((error) => {
@@ -82,7 +83,7 @@ export default () => {
         }
       });
       elements.postsContainer.addEventListener('click', (e) => {
-       watchedState.uiState.posts.forEach((post) => {
+        watchedState.uiState.posts.forEach((post) => {
           if (e.target.tagName === 'BUTTON') {
             const btnId = Number(e.target.getAttribute('data-id'));
             watchedState.currentId = btnId;
@@ -96,7 +97,7 @@ export default () => {
               post.state = 'read';
             }
           }
-        })
+        });
       });
     });
 };
