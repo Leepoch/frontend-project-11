@@ -13,6 +13,9 @@ const addNewPosts = (watchedState, url) => {
               watchedState.posts.unshift(post);
             }
           });
+        })
+        .catch((error) => {
+          watchedState.urlState = error.message;
         });
     }
     addNewPosts(watchedState, url);

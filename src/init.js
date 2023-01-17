@@ -72,11 +72,11 @@ export default () => {
               watchedState.posts = watchedState.posts.concat(parseData.posts);
               const uiState = parseData.uiState.posts;
               watchedState.uiState.posts = watchedState.uiState.posts.concat(uiState);
+            })
+            .catch((error) => {
+              watchedState.urlState = error.message;
             });
-        })
-          .catch((error) => {
-            watchedState.urlState = error.message;
-          });
+        });
         watchedState.inputState = 'empty';
         if (watchedState.feeds.length === 0) {
           addNewPosts(watchedState, url);
