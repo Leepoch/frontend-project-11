@@ -1,17 +1,19 @@
 import axios from 'axios';
 import parser from './parse.js';
 
-const addNewPosts = (watchedState, url) => {
+const addNewPosts = (watchedState) => {
   setTimeout(() => {
     if (watchedState.urlState === 'correct') {
-      axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
+      const activeFeed = watchedState.feeds[watchedState.feeds.length - 1];
+      axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(activeFeed.url)}`)
         .then((response) => {
-          const oldPosts = watchedState.posts.map((post) => post.postName);
+          const allPosts = watchedState.posts.map((post) => post.postName);
+          const activeFeedPosts = allPosts.filter((post) => activeFeed.id === post.feedId);
           const docParser = new DOMParser();
           const xml = docParser.parseFromString(response.data.contents, 'text/xml');
           const dataParse = parser(xml);
           dataParse.posts.forEach((post) => {
-            if (!oldPosts.includes(post.postName)) {
+            if (!activeFeedPosts.includes(post.postName)) {
               watchedState.posts.unshift(post);
             }
           });
@@ -20,7 +22,7 @@ const addNewPosts = (watchedState, url) => {
           watchedState.urlState = error.message;
         });
     }
-    addNewPosts(watchedState, url);
+    addNewPosts(watchedState);
   }, 5000);
 };
 

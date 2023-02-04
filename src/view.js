@@ -100,15 +100,14 @@ export default (state, i18nInstance, elements) => {
     elements.p.classList.add('text-danger');
     elements.p.textContent = i18nInstance.t('repeatUrl');
   }
-  state.uiState.posts.forEach((post) => {
-    const postsTitle = elements.postSidebar.querySelectorAll('a');
-    postsTitle.forEach((postTitle) => {
-      const postTitleId = Number(postTitle.getAttribute('data-id'));
-      if (post.state === 'read' && postTitleId === post.postId) {
-        postTitle.classList.remove('fw-bold');
-        postTitle.classList.add('fw-normal', 'link-secondary');
-      }
-    });
+
+  const links = elements.postSidebar.querySelectorAll('a');
+  links.forEach((link) => {
+    const linkId = Number(link.getAttribute('data-id'));
+    if (state.uiState.viewedPosts.includes(linkId)) {
+      link.classList.remove('fw-bold');
+      link.classList.add('fw-normal', 'link-secondary');
+    }
   });
   state.posts.forEach((post) => {
     if (post.id === state.currentId) {

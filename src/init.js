@@ -1,6 +1,7 @@
 import 'bootstrap';
 import axios from 'axios';
 import i18next from 'i18next';
+import _ from 'lodash';
 import './scss/styles.scss';
 import { object, string, setLocale } from 'yup';
 import onChange from 'on-change';
@@ -11,9 +12,6 @@ import resources from './locales/ru.js';
 
 export default () => {
   const state = {
-    modal: 'close',
-    targetBtn: null,
-    postId: 2,
     repeatUrls: [],
     urlState: 'filling',
     inputState: 'filling',
@@ -21,7 +19,7 @@ export default () => {
     feeds: [],
     posts: [],
     uiState: {
-      posts: [],
+      viewedPosts: [],
     },
   };
 
@@ -56,9 +54,7 @@ export default () => {
         schema.validate({ website: url }).then(() => {
           axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
             .then((response) => {
-              const docParser = new DOMParser();
-              const xml = docParser.parseFromString(response.data.contents, 'text/xml');
-              const parseData = parser(xml);
+              const parseData = parser(response.data.contents);
               if (parseData === 'error') {
                 watchedState.urlState = 'notRSS';
                 return;
@@ -67,13 +63,19 @@ export default () => {
                 watchedState.repeatUrls.push(url);
               }
               watchedState.urlState = 'correct';
+              const feedId = Number(_.uniqueId());
               watchedState.feeds.push({
                 heading: parseData.heading,
                 description: parseData.description,
+                url,
+                id: feedId,
               });
               watchedState.posts = watchedState.posts.concat(parseData.posts);
-              const uiState = parseData.uiState.posts;
-              watchedState.uiState.posts = watchedState.uiState.posts.concat(uiState);
+              watchedState.uiState.viewedPosts = [];
+              watchedState.posts.forEach((post) => {
+                post.id = Number(_.uniqueId());
+                post.feedId = feedId;
+              });
             })
             .catch((error) => {
               watchedState.urlState = error.message;
@@ -83,26 +85,29 @@ export default () => {
             watchedState.urlState = error.message;
           });
         watchedState.inputState = 'empty';
-        if (watchedState.feeds.length === 0) {
-          addNewPosts(watchedState, url);
-        }
       });
       elements.postsContainer.addEventListener('click', (e) => {
-        watchedState.uiState.posts.forEach((post) => {
-          if (e.target.tagName === 'BUTTON') {
-            const btnId = Number(e.target.getAttribute('data-id'));
-            watchedState.currentId = btnId;
-            if (btnId === post.postId) {
-              post.state = 'read';
-            }
-          }
-          if (e.target.tagName === 'A') {
-            const titleId = Number(e.target.getAttribute('data-id'));
-            if (titleId === post.postId) {
-              post.state = 'read';
-            }
-          }
-        });
+        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') {
+          const btnId = Number(e.target.getAttribute('data-id'));
+          watchedState.uiState.viewedPosts.push(btnId);
+          watchedState.currentId = btnId;
+        }
+        // watchedState.uiState.posts.forEach((post) => {
+        //   if (e.target.tagName === 'BUTTON') {
+        //     const btnId = Number(e.target.getAttribute('data-id'));
+        //     watchedState.currentId = btnId;
+        //     if (btnId === post.postId) {
+        //       post.state = 'read';
+        //     }
+        //   }
+        //   if (e.target.tagName === 'A') {
+        //     const titleId = Number(e.target.getAttribute('data-id'));
+        //     if (titleId === post.postId) {
+        //       post.state = 'read';
+        //     }
+        //   }
+        // });
       });
+      addNewPosts(watchedState);
     });
 };
