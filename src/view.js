@@ -36,7 +36,7 @@ export default (state, i18nInstance, elements) => {
       feed.classList.add('list-group-item', 'border-0', 'border-end-0');
       const feedName = document.createElement('h3');
       feedName.classList.add('h6', 'm-0');
-      feedName.textContent = dataFeed.heading;
+      feedName.textContent = dataFeed.title;
       const feedDescription = document.createElement('p');
       feedDescription.classList.add('m-0', 'small', 'text-black-50');
       feedDescription.textContent = dataFeed.description;
@@ -65,7 +65,7 @@ export default (state, i18nInstance, elements) => {
       postLink.setAttribute('data-id', postData.id);
       postLink.setAttribute('target', '_blank');
       postLink.setAttribute('rel', 'noopener', 'noreferrer');
-      postLink.textContent = postData.postName;
+      postLink.textContent = postData.title;
       const postButton = document.createElement('button');
       postButton.classList.add('btn', 'btn-outline-primary', 'btn-sm');
       postButton.setAttribute('type', 'button');
@@ -103,7 +103,7 @@ export default (state, i18nInstance, elements) => {
 
   const links = elements.postSidebar.querySelectorAll('a');
   links.forEach((link) => {
-    const linkId = Number(link.getAttribute('data-id'));
+    const linkId = link.getAttribute('data-id');
     if (state.uiState.viewedPosts.includes(linkId)) {
       link.classList.remove('fw-bold');
       link.classList.add('fw-normal', 'link-secondary');
@@ -111,7 +111,7 @@ export default (state, i18nInstance, elements) => {
   });
   state.posts.forEach((post) => {
     if (post.id === state.currentId) {
-      elements.modalTitle.textContent = post.postName;
+      elements.modalTitle.textContent = post.title;
       elements.modalBody.textContent = post.description;
     }
   });

@@ -3,16 +3,67 @@ import axios from 'axios';
 import i18next from 'i18next';
 import _ from 'lodash';
 import './scss/styles.scss';
-import { object, string, setLocale } from 'yup';
+import { string } from 'yup';
 import onChange from 'on-change';
 import render from './view.js';
 import parser from './parse.js';
-import addNewPosts from './addNewPosts';
 import resources from './locales/ru.js';
+
+const loadData = (url, watchedState) => {
+  axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
+    .then((response) => {
+      const parseData = parser(response.data.contents);
+      if (parseData === 'error') {
+        watchedState.urlState = 'notRSS';
+        return;
+      }
+      watchedState.urlState = 'correct';
+      const feedId = _.uniqueId();
+      watchedState.feeds.push({
+        title: parseData.title,
+        description: parseData.description,
+        url,
+        id: feedId,
+      });
+      watchedState.posts = watchedState.posts.concat(parseData.posts);
+      watchedState.uiState.viewedPosts = [];
+      watchedState.posts.forEach((post) => {
+        post.id = _.uniqueId();
+        post.feedId = feedId;
+      });
+    })
+    .catch((error) => {
+      watchedState.urlState = error.message;
+    });
+};
+
+const addNewPosts = (watchedState) => {
+  setTimeout(() => {
+    if (watchedState.urlState === 'correct') {
+      const activeFeed = watchedState.feeds[watchedState.feeds.length - 1];
+      axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(activeFeed.url)}`)
+        .then((response) => {
+          const activeFeedPosts = watchedState.posts.filter((post) => activeFeed.id === post.feedId);
+          const activeFeedPostsTitle = activeFeedPosts.map((post) => post.title);
+          const dataParse = parser(response.data.contents);
+          dataParse.posts.forEach((post) => {
+            if (!activeFeedPostsTitle.includes(post.title)) {
+              watchedState.posts.unshift(post);
+            }
+          });
+        })
+        .catch((error) => {
+          watchedState.urlState = error.message;
+        });
+    }
+    addNewPosts(watchedState);
+  }, 5000);
+};
+
+const getUrls = (watchedState) => watchedState.feeds.map((feed) => feed.url);
 
 export default () => {
   const state = {
-    repeatUrls: [],
     urlState: 'filling',
     inputState: 'filling',
     currentId: null,
@@ -24,6 +75,7 @@ export default () => {
   };
 
   const elements = {
+    form: document.querySelector('.rss-form'),
     p: document.querySelector('.feedback'),
     input: document.querySelector('#url-input'),
     feedSidebar: document.querySelector('.feeds'),
@@ -41,45 +93,14 @@ export default () => {
   })
     .then(() => {
       const watchedState = onChange(state, () => render(state, i18nInstance, elements));
-      const form = document.querySelector('.rss-form');
 
-      form.addEventListener('submit', (event) => {
+      elements.form.addEventListener('submit', (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const url = formData.get('url');
-        setLocale({});
-        const schema = object({
-          website: string().url('mustBeValid').notOneOf(watchedState.repeatUrls, 'exists'),
-        });
-        schema.validate({ website: url }).then(() => {
-          axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
-            .then((response) => {
-              const parseData = parser(response.data.contents);
-              if (parseData === 'error') {
-                watchedState.urlState = 'notRSS';
-                return;
-              }
-              if (!watchedState.repeatUrls.includes(url)) {
-                watchedState.repeatUrls.push(url);
-              }
-              watchedState.urlState = 'correct';
-              const feedId = Number(_.uniqueId());
-              watchedState.feeds.push({
-                heading: parseData.heading,
-                description: parseData.description,
-                url,
-                id: feedId,
-              });
-              watchedState.posts = watchedState.posts.concat(parseData.posts);
-              watchedState.uiState.viewedPosts = [];
-              watchedState.posts.forEach((post) => {
-                post.id = Number(_.uniqueId());
-                post.feedId = feedId;
-              });
-            })
-            .catch((error) => {
-              watchedState.urlState = error.message;
-            });
+        const schema = string().url('mustBeValid').notOneOf(getUrls(watchedState), 'exists');
+        schema.validate(url).then(() => {
+          loadData(url, watchedState);
         })
           .catch((error) => {
             watchedState.urlState = error.message;
@@ -87,26 +108,11 @@ export default () => {
         watchedState.inputState = 'empty';
       });
       elements.postsContainer.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') {
-          const btnId = Number(e.target.getAttribute('data-id'));
+        if (e.target.getAttribute('data-id') !== undefined) {
+          const btnId = e.target.getAttribute('data-id');
           watchedState.uiState.viewedPosts.push(btnId);
           watchedState.currentId = btnId;
         }
-        // watchedState.uiState.posts.forEach((post) => {
-        //   if (e.target.tagName === 'BUTTON') {
-        //     const btnId = Number(e.target.getAttribute('data-id'));
-        //     watchedState.currentId = btnId;
-        //     if (btnId === post.postId) {
-        //       post.state = 'read';
-        //     }
-        //   }
-        //   if (e.target.tagName === 'A') {
-        //     const titleId = Number(e.target.getAttribute('data-id'));
-        //     if (titleId === post.postId) {
-        //       post.state = 'read';
-        //     }
-        //   }
-        // });
       });
       addNewPosts(watchedState);
     });
