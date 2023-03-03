@@ -43,8 +43,8 @@ const addNewPosts = (watchedState) => {
       const activeFeed = watchedState.feeds[watchedState.feeds.length - 1];
       axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(activeFeed.url)}`)
         .then((response) => {
-          const activeFeedPosts = watchedState.posts.filter((post) => activeFeed.id === post.feedId);
-          const activeFeedPostsTitle = activeFeedPosts.map((post) => post.title);
+          const activeFeedPost = watchedState.posts.filter((post) => activeFeed.id === post.feedId);
+          const activeFeedPostsTitle = activeFeedPost.map((post) => post.title);
           const dataParse = parser(response.data.contents);
           dataParse.posts.forEach((post) => {
             if (!activeFeedPostsTitle.includes(post.title)) {
