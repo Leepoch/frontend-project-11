@@ -14,6 +14,7 @@ const render = (elements, path, value, i18nextInstance, watchedState) => {
   const newWatchedState = { ...watchedState };
   const { input } = elements;
   const { feedback } = elements;
+  const { submitBtn } = elements;
   const postsElement = document.querySelector('.posts');
 
   if (path === 'form.error') {
@@ -43,7 +44,11 @@ const render = (elements, path, value, i18nextInstance, watchedState) => {
     }
   }
   if (path === 'form.state') {
+    if (value === 'sending') {
+      submitBtn.disabled = true;
+    }
     if (value === 'finished') {
+      submitBtn.disabled = false;
       input.classList.remove('is-invalid');
       feedback.classList.remove('text-danger');
       feedback.classList.add('text-success');
@@ -117,6 +122,7 @@ export default () => {
   };
 
   const elements = {
+    submitBtn: document.querySelector('button[type="submit"]'),
     input: document.querySelector('#url-input'),
     feedback: document.querySelector('.feedback'),
     posts: document.querySelector('.posts'),
@@ -138,6 +144,7 @@ export default () => {
   const form = document.querySelector('form');
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    watchedState.form.state = 'sending';
 
     const { urls } = onChange.target(watchedState);
     const posts = onChange.target(watchedState).data.postsData;
