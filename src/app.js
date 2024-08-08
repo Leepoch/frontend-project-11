@@ -47,6 +47,9 @@ const render = (elements, path, value, i18nextInstance, watchedState) => {
     if (value === 'sending') {
       submitBtn.disabled = true;
     }
+    if (value === 'sended') {
+      submitBtn.disabled = false;
+    }
     if (value === 'finished') {
       submitBtn.disabled = false;
       input.classList.remove('is-invalid');
@@ -159,14 +162,17 @@ export default () => {
             const doc = parser(response.data);
             watchedState.urls.push(validationResult);
             watchedState.form.state = 'finished';
+            watchedState.form.state = 'sended';
             const { feedData, postsData } = prepareData(doc, urls.length, posts.length);
             watchedState.data.feedsData.push(feedData);
             watchedState.data.postsData.push(...postsData);
           }).catch((error) => {
             console.log(error.message);
+            watchedState.form.state = 'sended';
             watchedState.form.error = error.message;
           });
       }).catch((error) => {
+        watchedState.form.state = 'sended';
         watchedState.form.error = error.message;
       });
     timeout(watchedState);
