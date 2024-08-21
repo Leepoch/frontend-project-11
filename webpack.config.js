@@ -29,17 +29,14 @@ export default {
       },
     ],
   },
-  ignoreWarnings: [
-    {
-      module: /module2\.js\?[34]/, // A RegExp
+  devServer: {
+    client: {
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
     },
-    {
-      module: /[13]/,
-      message: /homepage/,
-    },
-    /warning from compiler/,
-    (warning) => true,
-  ],
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'template.html',
