@@ -159,7 +159,7 @@ export default () => {
       .then((validationResult) => {
         axios.get(addProxy(url))
           .then((response) => {
-            const doc = parser(response.data);
+            const doc = parser(response.data.contents);
             watchedState.urls.push(validationResult);
             watchedState.form.state = 'finished';
             watchedState.form.state = 'sended';
